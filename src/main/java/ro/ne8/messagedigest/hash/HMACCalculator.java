@@ -11,12 +11,11 @@ import java.security.NoSuchAlgorithmException;
 
 public class HMACCalculator {
 
-    public byte[] generateHMACValueForFile(final String fileName, final String algorithm, final String secret) throws IOException {
+    public byte[] generateHMACValueForFile(final String fileName, final String algorithm, final String secret) throws IOException, InvalidKeyException {
         final Mac mac = tryToGetMacInstance(algorithm);
 
         final Key key = new SecretKeySpec(secret.getBytes(), algorithm);
-        tryToInitKey(mac, key);
-
+        mac.init(key);
         final FileInputStream fileInputStream = tryToGetFileInputStream(fileName);
 
         final byte[] bufferInput = new byte[1];
@@ -28,13 +27,6 @@ public class HMACCalculator {
         return mac.doFinal();
     }
 
-    private void tryToInitKey(final Mac mac, final Key key) {
-        try {
-            mac.init(key);
-        } catch (final InvalidKeyException e) {
-            e.printStackTrace();
-        }
-    }
 
     private FileInputStream tryToGetFileInputStream(final String fileName) {
         try {
